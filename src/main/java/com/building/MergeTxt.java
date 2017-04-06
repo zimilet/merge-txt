@@ -26,6 +26,7 @@ public class MergeTxt {
 
 	public static void main(String[] args) {
 
+		// [01]
 		if (logger.isDebugEnabled()) {
 			logger.debug("[01]遍历(递归)，某个目录下的所有文件。选择文本文件(.txt)。");
 		}
@@ -37,16 +38,52 @@ public class MergeTxt {
 			if (logger.isDebugEnabled()) {
 				logger.debug("[02]创建汇总文件");
 			}
-			Path gatherFile = createGatherFile();
+			File gatherFile = createGatherFile();
 			if (null != gatherFile) {
 
-				// [03]
-				File sourcefile = fileQueue.poll();
-				while (null != sourcefile) {
+				// [02]
+				if (logger.isDebugEnabled()) {
+					logger.debug("[02]打开汇总文件");
+				}
+				// target
+				FileOutputStream fileOutputStream = null;
+				FileChannel outChannel = null;
 
-					appendToFile(sourcefile, gatherFile.toFile());
-					sourcefile = fileQueue.poll();
+				try {
 
+					// XXX append = true
+					fileOutputStream = new FileOutputStream(gatherFile, true);
+					outChannel = fileOutputStream.getChannel();
+
+					// [03]
+					if (logger.isDebugEnabled()) {
+						logger.debug("[03]依次追加一个文本文件的内容，到另一个文本文件中");
+					}
+					File sourcefile = fileQueue.poll();
+					while (null != sourcefile) {
+
+						appendToFile(sourcefile, outChannel);
+						sourcefile = fileQueue.poll();
+
+					}
+
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} finally {
+					if (null != outChannel) {
+						try {
+							outChannel.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					if (null != fileOutputStream) {
+						try {
+							fileOutputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 
 			}
@@ -60,22 +97,29 @@ public class MergeTxt {
 	 * 
 	 * @return
 	 */
-	private static Path createGatherFile() {
+	private static File createGatherFile() {
 
-		Path gatherFile = null;
+		File file = null;
 
 		try {
 
-			// Path,使用该类来操作任何文件系统中的文件.类似于JDK6中的File类.
-			Path path = Paths.get("/root/Dropbox/Notes/notes.txt" + System.currentTimeMillis());
+			// [01]
+			String fileName = "/root/Dropbox/Notes/notes.txt" + System.currentTimeMillis();
+			if (logger.isDebugEnabled()) {
+				logger.debug("fileName:" + fileName);
+			}
 
-			gatherFile = Files.createFile(path);
+			// [02]
+			// Path,使用该类来操作任何文件系统中的文件.类似于JDK6中的File类.
+			Path path = Paths.get(fileName);
+
+			file = Files.createFile(path).toFile();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return gatherFile;
+		return file;
 
 	}
 
@@ -83,30 +127,18 @@ public class MergeTxt {
 	 * 追加一个文本文件的内容，到另一个文本文件中。
 	 * 
 	 * @param source
-	 * @param target
+	 * @param outChannel
 	 */
-	private static void appendToFile(File source, File target) {
+	private static void appendToFile(File source, FileChannel outChannel) {
 
 		// source
 		FileInputStream fileInputStream = null;
 		FileChannel inChannel = null;
 
-		// target
-		FileOutputStream fileOutputStream = null;
-		FileChannel outChannel = null;
-
 		try {
-
-			if (!target.exists()) {
-				target.createNewFile();
-			}
 
 			fileInputStream = new FileInputStream(source);
 			inChannel = fileInputStream.getChannel();
-
-			// XXX append = true
-			fileOutputStream = new FileOutputStream(target, true);
-			outChannel = fileOutputStream.getChannel();
 
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 
@@ -122,21 +154,6 @@ public class MergeTxt {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-
-			if (null != outChannel) {
-				try {
-					outChannel.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (null != fileOutputStream) {
-				try {
-					fileOutputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 
 			if (null != inChannel) {
 				try {
