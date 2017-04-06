@@ -57,7 +57,7 @@ public class MergeTxt {
 
 					// [03]
 					if (logger.isDebugEnabled()) {
-						logger.debug("[03]依次追加一个文本文件的内容，到另一个文本文件中");
+						logger.debug("[03]依次追加一个文本文件的内容，到汇总文件中");
 					}
 					File sourcefile = fileQueue.poll();
 					while (null != sourcefile) {
