@@ -3,5 +3,13 @@
 2.创建并打开汇总文件。
 3.依次追加一个文本文件的内容，到汇总文件中。
 
+* Project
 mvn eclipse:eclipse
-Convert to Maven Project
+Eclipse Convert to Maven Project
+
+* LibreOffice
+sdk
+runtime(ure)
+Eclipse User Libraries
+
+
