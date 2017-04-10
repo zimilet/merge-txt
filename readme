@@ -3,6 +3,7 @@
 2.创建并打开汇总文件。
 3.依次追加一个文本文件的内容，到汇总文件中。
 3.依次追加一个文本文件的内容，到字符串容器，再到汇总文件中。
+4.Send Doc To My Kindle By Mail.
 
 * Project
 mvn eclipse:eclipse
