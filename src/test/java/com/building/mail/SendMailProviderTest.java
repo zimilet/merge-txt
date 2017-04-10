@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -14,13 +15,16 @@ public class SendMailProviderTest {
 	@Resource
 	private SendMailProvider mailProvider;
 
+	@Value("${mail.kindle}")
+	private String mailKindle;
+
 	@Test
 	public void testSendSimpleMail() {
 
 		long time = System.currentTimeMillis();
 
 		MailEntity mail = new MailEntity();
-		mail.setTo("qianshijinsheng@gmail.com");
+		mail.setTo(mailKindle);
 		mail.setSubject("Test Java Mail");
 		mail.setText("Timestamp : " + String.valueOf(time));
 		// 为from字段赋值
