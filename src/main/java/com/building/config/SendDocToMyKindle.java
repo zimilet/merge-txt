@@ -3,7 +3,9 @@ package com.building.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.building.mail.MailEntity;
 import com.building.mail.SendMailProvider;
@@ -11,7 +13,15 @@ import com.building.mail.SendMailProvider;
 /**
  * Send Doc To My Kindle By Mail
  */
+@Component
 public class SendDocToMyKindle {
+
+	@Value("${mail.kindle}")
+	private String mailKindle;
+
+	public String getMailKindle() {
+		return mailKindle;
+	}
 
 	public static void main(String[] args) {
 
@@ -25,13 +35,14 @@ public class SendDocToMyKindle {
 
 		// get bean
 		SendMailProvider mailProvider = annotationConfigApplicationContext.getBean(SendMailProvider.class);
+		SendDocToMyKindle sendDocToMyKindle = annotationConfigApplicationContext.getBean(SendDocToMyKindle.class);
 
 		String fileName = "Notes.txt";
 		String filePath = "/root/Documents/" + fileName;
 
 		// [02]
 		MailEntity mail = new MailEntity();
-		mail.setTo("qianshijinsheng@gmail.com");
+		mail.setTo(sendDocToMyKindle.getMailKindle());
 		mail.setSubject(fileName);
 		mail.setText("Timestamp : " + String.valueOf(System.currentTimeMillis()));
 		// 为from字段赋值
