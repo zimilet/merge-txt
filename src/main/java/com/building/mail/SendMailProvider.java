@@ -3,6 +3,7 @@ package com.building.mail;
 import java.io.File;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -60,6 +61,11 @@ public class SendMailProvider {
 			}
 		} else {
 
+			// gmail
+			if (email.getFrom().endsWith("@gmail.com")) {
+				setPropertiesForGmail();
+			}
+
 			// 建立简单邮件消息
 			SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 			simpleMailMessage.setFrom(email.getFrom());
@@ -85,6 +91,11 @@ public class SendMailProvider {
 				log.debug("The mail content is null.");
 			}
 		} else {
+
+			// gmail
+			if (email.getFrom().endsWith("@gmail.com")) {
+				setPropertiesForGmail();
+			}
 
 			// 建立邮件消息
 			MimeMessage message = javaMailSender.createMimeMessage();
@@ -145,6 +156,20 @@ public class SendMailProvider {
 			}
 
 		}
+
+	}
+
+	/**
+	 * Gmail
+	 */
+	private void setPropertiesForGmail() {
+
+		Properties properties = javaMailSender.getJavaMailProperties();
+		properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+		properties.setProperty("mail.smtp.port", "465");
+		properties.setProperty("mail.smtp.socketFactory.port", "465");
+		javaMailSender.setJavaMailProperties(properties);
 
 	}
 
